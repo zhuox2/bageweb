@@ -1,5 +1,0 @@
-https://github.com/oUYUo/bageweb
-
-不好意思，我用的ssm，ssh不会，react也只用了home.jsp一点，而且我觉得我用的肯定不对，今天主要就是看react去了，可是也没看懂多少，用到实际还是差点。我不确定什么时候能把react用的还可以，所以先交这一份，等重构好了再发一份。
-
-谢谢
