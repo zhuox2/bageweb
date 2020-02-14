@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="com.bagevent.pojo">
+    <class name="User" table="user">
+        <id name="user_id" column="user_id">
+            <generator class="native">
+            </generator>
+        </id>
+        <property name="email" column="email"  />
+        <property name="user_name" column="user_name"/>
+        <property name="cellphone" column="cellphone"/>
+        <property name="password" column="password"/>
+        <property name="salt" column="salt"/>
+        <property name="create_time" column="create_time"/>
+        <property name="state" column="state"/>
+     </class>
+
+</hibernate-mapping>

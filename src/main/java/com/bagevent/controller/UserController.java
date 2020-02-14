@@ -1,11 +1,16 @@
 package com.bagevent.controller;
 
+import com.bagevent.dao.UserDao;
+import com.bagevent.dao.UserloginlogDao;
 import com.bagevent.pojo.User;
 import com.bagevent.pojo.Userloginlog;
-import com.bagevent.service.UserService;
-import com.bagevent.service.UserloginlogService;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
+import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.DigestUtils;
@@ -18,11 +23,12 @@ import java.util.List;
 @Controller
 @RequestMapping("")
 public class UserController {
-    @Autowired
-    UserService userService;
 
     @Autowired
-    UserloginlogService userloginlogService;
+    UserloginlogDao userloginlogDao;
+
+    @Autowired
+    UserDao userDao;
 
     @RequestMapping("home")
     public String home(){
@@ -53,7 +59,7 @@ public class UserController {
         Timestamp timestamp=new Timestamp(System.currentTimeMillis());
         user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes()));
         user.setCreate_time(timestamp);
-        userService.add(user);
+        userDao.save(user);
         System.out.println(user.toString());
         return "home";
     }
@@ -61,16 +67,19 @@ public class UserController {
     @RequestMapping("user_login")
     public String login(User user, HttpServletRequest request, Model model){
 
-        User tmp=userService.get(user.getUser_name());
+
+        System.out.println(user.getUser_name());
+        System.out.println(user.getPassword());
+        User tmp= (User) userDao.find("from User u where u.user_name = ?","hiber").get(0);
 
         if(tmp.getPassword().equals(DigestUtils.md5DigestAsHex(user.getPassword().getBytes()))){
             Userloginlog userloginlog=new Userloginlog();
             userloginlog.setUser_id(tmp.getUser_id());
             userloginlog.setLogin_ip(request.getRemoteAddr());
             userloginlog.setLogin_time(new Timestamp(System.currentTimeMillis()));
-            userloginlogService.add(userloginlog);
+            userloginlogDao.save(userloginlog);
 
-            List<Userloginlog>  userloginlogList=userloginlogService.list();
+            List<Userloginlog>  userloginlogList=(List<Userloginlog>)userloginlogDao.find("from Userloginlog");
             for (Userloginlog i:userloginlogList
                  ) {
                 System.out.println(i);

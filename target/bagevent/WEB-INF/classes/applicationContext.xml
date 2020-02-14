@@ -2,11 +2,16 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-http://www.springframework.org/schema/context ">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/context
+          http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/context ">
     <!--    启动对注解的识别-->
     <context:annotation-config/>
-    <context:component-scan base-package="com.bagevent.service"/>
+    <context:component-scan base-package="com.bagevent">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
     <!--    指定对jdbc.properties的引用-->
     <context:property-placeholder location="classpath:jdbc.properties"/>
     <!--    配置数据源-->
@@ -16,15 +21,36 @@ http://www.springframework.org/schema/context ">
         <property name="password" value="${jdbc.password}"/>
 
     </bean>
-    <!--    配置mybatis的sessionFactory，其中声明了别名，并且使用前面配置的数据源，扫描categorymapper.xml配置文件-->
-    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="typeAliasesPackage" value="com.bagevent.pojo"/>
-        <property name="dataSource" ref="dataSource"/>
-        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
+
+
+
+
+
+    <!--    hibernate-->
+    <bean name="userloginlogDao" class="com.bagevent.dao.UserloginlogDao">
+        <property name="sessionFactory" ref="sf"/>
+    </bean>
+    <bean name="userDao" class="com.bagevent.dao.UserDao">
+        <property name="sessionFactory" ref="sf"/>
     </bean>
 
-    <!--    扫描Mapper类-->
-    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="com.bagevent.mapper"/>
+    <bean name="sf" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+<!--        <property name="mappingLocations" value="classpath:com/bagevent/pojo/*.hbm.xml"/>-->
+
+        <property name="mappingLocations">
+            <list>
+                <value>classpath:com/bagevent/pojo/Userloginlog.hmb.xml</value>
+                <value>classpath:com/bagevent/pojo/User.hmb.xml</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <value>
+                hibernate.dialect=org.hibernate.dialect.MySQLDialect
+                hibernate.show_sql=true
+                hbm2ddl.auto=update
+            </value>
+        </property>
     </bean>
+    <!--    hibernate-->
 </beans>
